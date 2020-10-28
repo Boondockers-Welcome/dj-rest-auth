@@ -57,6 +57,9 @@ class SocialLoginSerializer(serializers.Serializer):
         social_login.token = token
         return social_login
 
+    def get_tokens_to_parse(self, token, attrs):
+       return {'access_token': token['access_token']}
+
     def validate(self, attrs):
         view = self.context.get('view')
         request = self._get_request()
@@ -110,7 +113,7 @@ class SocialLoginSerializer(serializers.Serializer):
             )
             token = client.get_access_token(code)
             access_token = token['access_token']
-            tokens_to_parse = {'access_token': access_token}
+            tokens_to_parse = self.get_tokens_to_parse(token, attrs)
 
             # If available we add additional data to the dictionary
             for key in ["refresh_token", adapter.expires_in_key]:
