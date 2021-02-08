@@ -36,6 +36,10 @@ class SocialLoginSerializer(serializers.Serializer):
     access_token = serializers.CharField(required=False, allow_blank=True)
     code = serializers.CharField(required=False, allow_blank=True)
 
+    def __init__(self, *args, **kwargs):
+        self.connect = False
+        super().__init__(*args, **kwargs)
+
     def _get_request(self):
         request = self.context.get('request')
         if not isinstance(request, HttpRequest):
@@ -148,7 +152,7 @@ class SocialLoginSerializer(serializers.Serializer):
                     )
 
             login.lookup()
-            login.save(request, connect=True)
+            login.save(request, connect=self.connect)
 
         attrs['user'] = login.account.user
 
@@ -156,6 +160,10 @@ class SocialLoginSerializer(serializers.Serializer):
 
 
 class SocialConnectMixin(object):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.connect = True
+
     def get_social_login(self, *args, **kwargs):
         """
         Set the social login process state to connect rather than login
