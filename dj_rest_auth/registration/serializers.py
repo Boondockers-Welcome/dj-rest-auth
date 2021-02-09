@@ -144,7 +144,7 @@ class SocialLoginSerializer(serializers.Serializer):
             if allauth_settings.UNIQUE_EMAIL:
                 # Do we have an account already with this email address?
                 account_exists = get_user_model().objects.filter(
-                    email=login.user.email,
+                    email__iexact=login.user.email,
                 ).exists()
                 if account_exists:
                     raise serializers.ValidationError(
